@@ -14,10 +14,16 @@ export const PeoplePage = () => {
   useEffect(() => {
     getPeople()
       .then(res => {
+        if (!res || res.length === 0) {
+          setIsError(true);
+
+          return;
+        }
+
         setPeople(res);
       })
       .catch(() => setIsError(true));
-  }, [people]);
+  }, []);
 
   return (
     <>
@@ -36,19 +42,21 @@ export const PeoplePage = () => {
 
           <div className="column">
             <div className="box table-container">
-              {people.length <= 0 && <Loader />}
+              {people.length <= 0 && !isError && <Loader />}
 
               {isError && (
                 <p data-cy="peopleLoadingError">Something went wrong</p>
               )}
 
-              {!people && (
+              {people.length === 0 && !isError && (
                 <p data-cy="noPeopleMessage">
                   There are no people on the server
                 </p>
               )}
 
-              {/* <p>There are no people matching the current search criteria</p> */}
+              {people.length > 0 && filteredPeople.length <= 0 && (
+                <p>There are no people matching the current search criteria</p>
+              )}
 
               <PeopleTable allPeople={people} people={filteredPeople} />
             </div>

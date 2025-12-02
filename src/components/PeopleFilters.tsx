@@ -30,9 +30,12 @@ export const PeopleFilters: React.FC<Props> = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [value, setValue] = useState('');
+  const [isSorted, setIsSorted] = useState<boolean>(false);
 
   const sex = searchParams.get('sex') || '';
   const centuries = searchParams.getAll('centuries') || [];
+  const sort = searchParams.get('sort') || '';
+  const order = searchParams.get('order');
 
   useEffect(() => {
     const filtered = people
@@ -65,6 +68,24 @@ export const PeopleFilters: React.FC<Props> = ({
         if (centuries.some(c => c === century.toString())) {
           return person;
         }
+      })
+      .sort((person1, person2) => {
+        if (!sort && !order) {
+          return 0;
+        }
+
+        const a = person1[sort];
+        const b = person2[sort];
+
+        if (typeof a === 'string' && typeof b === 'string') {
+          return order === 'desc' ? b.localeCompare(a) : a.localeCompare(b);
+        }
+
+        if (typeof a === 'number' && typeof b === 'number') {
+          return order === 'desc' ? b - a : a - b;
+        }
+
+        return 0;
       });
 
     setFilteredPeople(filtered);
@@ -93,6 +114,7 @@ export const PeopleFilters: React.FC<Props> = ({
     if (centuries.includes(century)) {
       return true;
     }
+
     return false;
   };
 
@@ -155,7 +177,7 @@ export const PeopleFilters: React.FC<Props> = ({
               })}
               to={{
                 pathname,
-                search: `?${handleCenturyClick('16')}`,
+                search: `${handleCenturyClick('16')}`,
               }}
             >
               16
@@ -168,7 +190,7 @@ export const PeopleFilters: React.FC<Props> = ({
               })}
               to={{
                 pathname,
-                search: `?${handleCenturyClick('17')}`,
+                search: `${handleCenturyClick('17')}`,
               }}
             >
               17
@@ -181,7 +203,7 @@ export const PeopleFilters: React.FC<Props> = ({
               })}
               to={{
                 pathname,
-                search: `?${handleCenturyClick('18')}`,
+                search: `${handleCenturyClick('18')}`,
               }}
             >
               18
@@ -194,7 +216,7 @@ export const PeopleFilters: React.FC<Props> = ({
               })}
               to={{
                 pathname,
-                search: `?${handleCenturyClick('19')}`,
+                search: `${handleCenturyClick('19')}`,
               }}
             >
               19
@@ -207,7 +229,7 @@ export const PeopleFilters: React.FC<Props> = ({
               })}
               to={{
                 pathname,
-                search: `?${handleCenturyClick('20')}`,
+                search: `${handleCenturyClick('20')}`,
               }}
             >
               20
@@ -222,7 +244,7 @@ export const PeopleFilters: React.FC<Props> = ({
               })}
               to={{
                 pathname,
-                search: `?${getSearchWith(searchParams, { centuries: null })}`,
+                search: `${getSearchWith(searchParams, { centuries: null })}`,
               }}
             >
               All
@@ -232,9 +254,18 @@ export const PeopleFilters: React.FC<Props> = ({
       </div>
 
       <div className="panel-block">
-        <a className="button is-link is-outlined is-fullwidth" href="#/people">
+        <Link
+          className="button is-link is-outlined is-fullwidth"
+          onClick={() => {
+            setValue('');
+          }}
+          to={{
+            pathname: pathname,
+            search: `${getSearchWith(searchParams, { centuries: null, query: null, sex: null })}`,
+          }}
+        >
           Reset all filters
-        </a>
+        </Link>
       </div>
     </nav>
   );

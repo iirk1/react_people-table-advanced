@@ -4,7 +4,14 @@ import classNames from 'classnames';
 import { Person } from '../types';
 import { PersonLink } from './PersonLink';
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
+import { getSearchWith } from '../utils/searchHelper';
 
 type Props = {
   people: Person[];
@@ -19,12 +26,33 @@ export const PeopleTable: React.FC<Props> = ({ people, allPeople }) => {
   const { slug } = useParams();
   const { pathname, search } = useLocation();
   const params = new URLSearchParams(search);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const order = searchParams.get('order') === 'desc' ? 'desc' : null;
+  const sort = searchParams.get('sort') || '';
 
   useEffect(() => {
     if (slug) {
       setCheckedSlug(slug);
     }
   }, [slug]);
+
+  const handleSortPath = (sortName: string) => {
+    if (sort === sortName && order === null) {
+      return getSearchWith(searchParams, { sort: sortName, order: 'desc' });
+    } else if (order !== null) {
+      return getSearchWith(searchParams, { sort: null, order: null });
+    } else {
+      return getSearchWith(searchParams, { sort: sortName });
+    }
+  };
+
+  const handleClass = (sortName: string) => {
+    return classNames('fas ', {
+      'fa-sort': sortName !== sort,
+      'fa-sort-up': sortName === sort && order !== 'desc',
+      'fa-sort-down': sortName === sort && order === 'desc',
+    });
+  };
 
   return (
     <>
@@ -38,44 +66,64 @@ export const PeopleTable: React.FC<Props> = ({ people, allPeople }) => {
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Name
-                  <a href="#/people?sort=name">
+                  <Link
+                    to={{
+                      pathname: pathname,
+                      search: `${handleSortPath('name')}`,
+                    }}
+                  >
                     <span className="icon">
-                      <i className="fas fa-sort" />
+                      <i className={handleClass('name')} />
                     </span>
-                  </a>
+                  </Link>
                 </span>
               </th>
 
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Sex
-                  <a href="#/people?sort=sex">
+                  <Link
+                    to={{
+                      pathname: pathname,
+                      search: `${handleSortPath('sex')}`,
+                    }}
+                  >
                     <span className="icon">
-                      <i className="fas fa-sort" />
+                      <i className={handleClass('sex')} />
                     </span>
-                  </a>
+                  </Link>
                 </span>
               </th>
 
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Born
-                  <a href="#/people?sort=born&amp;order=desc">
+                  <Link
+                    to={{
+                      pathname: pathname,
+                      search: `${handleSortPath('born')}`,
+                    }}
+                  >
                     <span className="icon">
-                      <i className="fas fa-sort-up" />
+                      <i className={handleClass('born')} />
                     </span>
-                  </a>
+                  </Link>
                 </span>
               </th>
 
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Died
-                  <a href="#/people?sort=died">
+                  <Link
+                    to={{
+                      pathname: pathname,
+                      search: `${handleSortPath('died')}`,
+                    }}
+                  >
                     <span className="icon">
-                      <i className="fas fa-sort" />
+                      <i className={handleClass('died')} />
                     </span>
-                  </a>
+                  </Link>
                 </span>
               </th>
 
