@@ -26,7 +26,7 @@ export const PeopleTable: React.FC<Props> = ({ people, allPeople }) => {
   const { slug } = useParams();
   const { pathname, search } = useLocation();
   const params = new URLSearchParams(search);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const order = searchParams.get('order') === 'desc' ? 'desc' : null;
   const sort = searchParams.get('sort') || '';
 
@@ -142,7 +142,6 @@ export const PeopleTable: React.FC<Props> = ({ people, allPeople }) => {
               );
 
               const handleOnclick = (personSlug: string) => {
-                console.log(search);
                 navigate(`${personSlug}${search}`, { replace: true });
                 setCheckedSlug(personSlug);
               };

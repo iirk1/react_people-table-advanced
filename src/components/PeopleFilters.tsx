@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
-import {
-  Link,
-  useLocation,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Person } from '../types';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import classNames from 'classnames';
@@ -25,12 +20,10 @@ export const PeopleFilters: React.FC<Props> = ({
     female = 'f',
   }
 
-  const { slug } = useParams();
-  const { pathname, search } = useLocation();
+  const { pathname } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [value, setValue] = useState('');
-  const [isSorted, setIsSorted] = useState<boolean>(false);
 
   const sex = searchParams.get('sex') || '';
   const centuries = searchParams.getAll('centuries') || [];
@@ -69,7 +62,7 @@ export const PeopleFilters: React.FC<Props> = ({
           return person;
         }
       })
-      .sort((person1, person2) => {
+      .sort((person1: Person, person2: Person) => {
         if (!sort && !order) {
           return 0;
         }

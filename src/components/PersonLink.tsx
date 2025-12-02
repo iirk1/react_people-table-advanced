@@ -10,7 +10,11 @@ export const PersonLink: React.FC<Props> = ({ parent, handleOnClick }) => {
   return (
     <a
       className={classNames({ 'has-text-danger': parent.sex === 'f' })}
-      onClick={() => handleOnClick(parent.slug)}
+      href={`#/people/${parent.slug}`}
+      onClick={e => {
+        e.preventDefault();
+        handleOnClick(parent.slug);
+      }}
     >
       {parent.name || '-'}
     </a>
